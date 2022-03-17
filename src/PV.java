@@ -1,8 +1,9 @@
-public class PV extends COMMON{
+public class PV extends COMMON {
 
     private String name;
+    private PHD drive;
 
-    public PV(String name){
+    public PV(String name, PHD drive){
         super();
         this.name = name;
     }
