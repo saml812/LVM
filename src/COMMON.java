@@ -6,4 +6,8 @@ public class COMMON {
     public COMMON(){
         id = UUID.randomUUID();
     }
+
+    public UUID getId(){
+        return id;
+    }
 }
