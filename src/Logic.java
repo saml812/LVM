@@ -79,7 +79,13 @@ public class Logic {
             else if (userChoice.equals("pvlist")){
                 listVolume();
             }
-            
+            else if (userChoice.indexOf("vgcreate") > -1){
+                userChoice = userChoice.substring(9);
+                String name = userChoice.substring(0, userChoice.indexOf(" "));
+                userChoice = userChoice.substring(userChoice.indexOf(" ") + 1);
+                String PVname = userChoice.substring(0);
+                
+            }
             userChoice = s.nextLine();
         }
     }
@@ -108,7 +114,8 @@ public class Logic {
         }
     }
 
-    public void createVG(){
-
+    public void createVG(String name, PV PVname){
+        volumeGroup = new VG(name, PVname);
+        groupList.add(volumeGroup);
     }
 }
