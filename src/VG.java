@@ -4,15 +4,16 @@ public class VG extends COMMON{
     private double total;
     private double avaliable;
     private String name;
-    private PV PVname;
-    private ArrayList<PV> pvList;
+    private ArrayList<PV> pvList = new ArrayList<PV>();
 
     public VG(String name, PV PVname){
         super();
-        this.total = total;
-        this.avaliable = avaliable;
+        for (PV pv : pvList)
+        {
+            total+= pv.getDrive().getSize();
+        }
+        this.avaliable = 0;
         this.name = name;
-        this.PVname = PVname;
         pvList.add(PVname);
     }
 
@@ -27,4 +28,5 @@ public class VG extends COMMON{
     public String getName() {
         return name;
     }
+
 }
