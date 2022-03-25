@@ -8,6 +8,8 @@ public class Logic {
     ArrayList<PV> volumeList = new ArrayList<PV>();
     private VG volumeGroup;
     ArrayList<VG> groupList = new ArrayList<VG>();
+    private LV logicalVolume;
+    ArrayList<LV> logicalList = new ArrayList<LV>();
 
     public void run(){
         System.out.println("Welcome to the LVM system! Enter your commands:");
@@ -105,12 +107,45 @@ public class Logic {
                     System.out.println("Physical Volume: " + PVname + " does not exist or already linked to a Volume Group or Volume Group: " + name + " already exist");
                 }
             }
+            else if (userChoice.contains("vgextend")){
+                userChoice = userChoice.substring(9);
+                String name = userChoice.substring(0, userChoice.indexOf(" "));
+                userChoice = userChoice.substring(userChoice.indexOf(" ") + 1);
+                String PVname = userChoice.substring(0);
+
+                boolean exist = false;
+                PV object = null;
+                for (PV pv : volumeList) {
+                    if (pv.getName().equals(PVname)) {
+                        exist = true;
+                        object = pv;
+                    }
+                }
+                VG object1 = null;
+                for (VG vg : groupList) {
+                    if (vg.getName().equals(name)) {
+                        object1 = vg;
+                    }
+                }
+                if (exist)
+                {
+                    vgextend(object1, object);
+                    System.out.println("Volume Group " + name + " updated");
+                }
+                else {
+                    System.out.println("Physical Volume: " + PVname + " does not exist or already linked to a Volume Group");
+                }
+            }
             else if (userChoice.contains("vglist"))
             {
+                vglist();
+            }
+            else if (userChoice.contains("lvcreate")){
 
             }
             userChoice = s.nextLine();
         }
+        System.out.println("Saving data. Good-bye!");
     }
 
     public void createHD(String name, int size, String type){
@@ -130,6 +165,12 @@ public class Logic {
     }
 
     public void listVolume(){
+        for (VG vg : groupList) {
+            for (int i = 0; i < vg.getPvList().size(); i++)
+            {
+                if (vg.getPvList().get(i).getName().equals())
+            }
+        }
         for (PV pv : volumeList) {
             System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getDrive().getName() + "] [" + pv.getId() + "]");
         }
@@ -140,9 +181,25 @@ public class Logic {
         groupList.add(volumeGroup);
     }
 
+    public void vgextend(VG name, PV volume) {
+        name.getPvList().add(volume);
+        name.updateSize(volume.getDrive().getSize());
+    }
+
     public void vglist(){
         for (VG vg : groupList){
-            System.out.println(vg.getName() + ": total: [" + vg.getTotal() + " available: [");
+            String display = vg.getName() + ": total:[" + vg.getTotal() + vg.getPvList().get(0).getDrive().getType() + "] available:[" + vg.getAvaliable() + vg.getPvList().get(0).getDrive().getType()+ "] [";
+            for (int i = 0; i < vg.getPvList().size(); i++){
+                String drive = vg.getPvList().get(i).getName();
+                display += drive + ",";
+            }
+            display = display.substring(0, display.length()-1);
+            display += "] [" + vg.getId() + "]";
+            System.out.println(display.toString());
         }
+    }
+
+    public void lvcreate(){
+
     }
 }
