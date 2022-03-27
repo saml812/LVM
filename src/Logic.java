@@ -1,5 +1,10 @@
+import javax.swing.*;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
+import java.util.UUID;
 
 public class Logic {
     private PHD drive;
@@ -10,8 +15,85 @@ public class Logic {
     ArrayList<VG> groupList = new ArrayList<VG>();
     private LV logicalVolume;
     ArrayList<LV> logicalList = new ArrayList<LV>();
+    
+    Data save = new Data();
 
-    public void run(){
+    public void run() throws FileNotFoundException {
+
+        File myObj = new File("src/Data");
+        Scanner myReader = new Scanner(myObj);
+        while (myReader.hasNextLine()) {
+            String data = myReader.nextLine();
+            if (data.contains("PHD")){
+                String[] driveData = data.split("\\|");
+                createHD(driveData[1], Integer.parseInt(driveData[2]), driveData[3]);
+            }
+            if (data.contains("PV")){
+                String[] driveData = data.split("\\|");
+                boolean exist = false;
+                PHD object = null;
+                for (PHD phd : driveList) {
+                    if (phd.getName().equals(driveData[2])) {
+                        exist = true;
+                        object = phd;
+                    }
+                }
+                createPV(driveData[1], object, driveData[3]);
+            }
+            if (data.contains("VG")){
+                String[] driveData = data.split("\\|");
+                boolean exist = false;
+                PV object = null;
+                for (PV pv : volumeList) {
+                    if (driveData[2].contains(",")){
+                        if (pv.getName().equals(driveData[2].substring(0,driveData[2].indexOf(",")))){
+                            exist = true;
+                            object = pv;
+                        }
+                    }
+                    else if (pv.getName().equals(driveData[2])) {
+                        exist = true;
+                        object = pv;
+                    }
+                }
+                createVG(driveData[1], object, driveData[3]);
+                if (driveData[2].contains(",")){
+                    String[] drives = driveData[2].split("\\,");
+                    {
+                        for (int i = 1; i < drives.length; i++){
+                            VG object1 = null;
+                            for (VG vg : groupList){
+                                if (vg.getName().equals(driveData[1])){
+                                    object1 = vg;
+                                }
+                            }
+                            PV object2 = null;
+                            for (PV pv : volumeList){
+                                if (pv.getName().equals(drives[i])){
+                                    object2 = pv;
+                                }
+                            }
+                            vgextend(object1, object2);
+                        }
+                    }
+                }
+            }
+            if (data.contains("LV")){
+                String[] driveData = data.split("\\|");
+                boolean exist = false;
+                VG object = null;
+                for (VG vg : groupList) {
+                    if (vg.getName().equals(driveData[4])) {
+                        exist = true;
+                        object = vg;
+                    }
+                }
+                lvcreate((driveData[1]), Integer.parseInt(driveData[2]), object, driveData[3], driveData[5]);
+            }
+        }
+        myReader.close();
+
+
         System.out.println("Welcome to the LVM system! Enter your commands:");
         Scanner s = new Scanner(System.in);
         String userChoice = s.nextLine();
@@ -65,13 +147,20 @@ public class Logic {
                         break;
                     }
                 }
-                if (exist && !dup)
+                if (exist && !dup && !object.isLinked())
                 {
                     createPV(name, object);
+                    object.setLinked(true);
                     System.out.println("Physical Volume " + name + " installed");
                 }
+                else if (!exist){
+                    System.out.println("Drive: " + PHDname + " does not exist");
+                }
+                else if (dup) {
+                    System.out.println("Physical Volume " + name + " already exist");
+                }
                 else {
-                    System.out.println("Drive: " + PHDname + " does not exist or already linked to a Physical Volume or Physical Volume: " + name + " already exist");
+                    System.out.println("Drive: " + PHDname + " is linked to other Physical Volume");
                 }
             }
             else if (userChoice.equals("pvlist")){
@@ -98,13 +187,20 @@ public class Logic {
                         break;
                     }
                 }
-                if (exist && !dup)
+                if (exist && !dup && !object.isLinked())
                 {
                     createVG(name, object);
+                    object.setLinked(true);
                     System.out.println("Volume Group " + name + " installed");
                 }
+                else if (!exist){
+                    System.out.println("Physical Volume: " + PVname + " does not exist");
+                }
+                else if (dup) {
+                    System.out.println("Volume Group " + name + " already exist");
+                }
                 else {
-                    System.out.println("Physical Volume: " + PVname + " does not exist or already linked to a Volume Group or Volume Group: " + name + " already exist");
+                    System.out.println("Physical Volume: " + PVname + " is linked to other Volume Group");
                 }
             }
             else if (userChoice.contains("vgextend")){
@@ -127,13 +223,16 @@ public class Logic {
                         object1 = vg;
                     }
                 }
-                if (exist)
+                if (exist && !object.isLinked())
                 {
                     vgextend(object1, object);
                     System.out.println("Volume Group " + name + " updated");
                 }
+                else if (!exist){
+                    System.out.println("Physical Volume: " + PVname + " does not exist");
+                }
                 else {
-                    System.out.println("Physical Volume: " + PVname + " does not exist or already linked to a Volume Group");
+                    System.out.println("Physical Volume: " + PVname + " is linked to other Volume Group");
                 }
             }
             else if (userChoice.contains("vglist"))
@@ -141,11 +240,57 @@ public class Logic {
                 vglist();
             }
             else if (userChoice.contains("lvcreate")){
+                userChoice = userChoice.substring(9);
+                String name = userChoice.substring(0, userChoice.indexOf(" "));
+                userChoice = userChoice.substring(userChoice.indexOf(" ") + 1);
+                int size = Integer.parseInt(userChoice.substring(0, userChoice.indexOf(" ")-1));
+                String type = userChoice.substring(userChoice.indexOf(" ")-1 ,userChoice.indexOf(" "));
+                userChoice = userChoice.substring(userChoice.indexOf(" ") + 1);
+                String VGname = userChoice.substring(0);
 
+                boolean exist = false;
+                VG object = null;
+                for (VG vg : groupList) {
+                    if (vg.getName().equals(VGname)) {
+                        exist = true;
+                        object = vg;
+                    }
+                }
+                boolean dup = false;
+                for (LV lv : logicalList) {
+                    if (lv.getName().equals(name)) {
+                        dup = true;
+                        break;
+                    }
+                }
+
+                if (exist && !dup && size <= object.getAvaliable())
+                {
+                    lvcreate(name, size, object, type);
+                    object.setAvaliable(size);
+                    System.out.println("Logical Volume " + name + " installed");
+                }
+                else if (!exist){
+                    System.out.println("Volume Group: " + VGname + " does not exist");
+                }
+                else if (dup) {
+                    System.out.println("Logical Volume " + name + " already exist");
+                }
+                else {
+                    System.out.println("Volume Group: " + VGname + " does not have enough space");
+                }
+
+            }
+            else if (userChoice.contains("lvlist")){
+                lvlist();
+            }
+            else{
+                System.out.println("Invalid command");
             }
             userChoice = s.nextLine();
         }
         System.out.println("Saving data. Good-bye!");
+        save.writeToFile(driveList, volumeList, groupList, logicalList);
     }
 
     public void createHD(String name, int size, String type){
@@ -164,20 +309,38 @@ public class Logic {
         volumeList.add(volume);
     }
 
+    public void createPV(String name, PHD PHDname, String id){
+        volume = new PV(name, PHDname);
+        volume.setId(UUID.fromString(id));
+        volumeList.add(volume);
+    }
+
     public void listVolume(){
-        for (VG vg : groupList) {
-            for (int i = 0; i < vg.getPvList().size(); i++)
-            {
-                if (vg.getPvList().get(i).getName().equals())
-            }
-        }
         for (PV pv : volumeList) {
-            System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getDrive().getName() + "] [" + pv.getId() + "]");
+            if (groupList.isEmpty()){
+                System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getId() + "]");
+            }
+            else
+            for (VG vg : groupList) {
+                for (int i = 0; i < vg.getPvList().size(); i++)
+                {
+                    if (vg.getPvList().get(i).getName().equals(pv.getName()))
+                    {
+                        System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + vg.getName() + "] [" + pv.getId() + "]");
+                    }
+                }
+            }
         }
     }
 
     public void createVG(String name, PV volume){
         volumeGroup = new VG(name, volume);
+        groupList.add(volumeGroup);
+    }
+
+    public void createVG(String name, PV volume, String id){
+        volumeGroup = new VG(name, volume);
+        volumeGroup.setId(UUID.fromString(id));
         groupList.add(volumeGroup);
     }
 
@@ -199,7 +362,21 @@ public class Logic {
         }
     }
 
-    public void lvcreate(){
-
+    public void lvcreate(String name, int size, VG VGname, String type){
+        logicalVolume = new LV(size, name, VGname, type);
+        logicalList.add(logicalVolume);
     }
+
+    public void lvcreate(String name, int size, VG VGname, String type, String id){
+        logicalVolume = new LV(size, name, VGname, type);
+        logicalVolume.setId(UUID.fromString(id));
+        logicalList.add(logicalVolume);
+    }
+
+    public void lvlist(){
+        for (LV logical : logicalList){
+            System.out.println(logical.getName() + ": [" + logical.getSize() + logical.getType() + "] [" + logical.getVolumeGroup().getName() + "] [" + logical.getId() + "]");
+        }
+    }
+    
 }

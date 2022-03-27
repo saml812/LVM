@@ -29,6 +29,10 @@ public class VG extends COMMON{
         return name;
     }
 
+    public void setAvaliable(int avaliable) {
+        this.avaliable -= avaliable;
+    }
+
     public ArrayList<PV> getPvList() {
         return pvList;
     }

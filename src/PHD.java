@@ -1,4 +1,4 @@
-public class PHD {
+public class PHD extends COMMON{
     private String name;
     private int size;
     private String type;

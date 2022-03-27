@@ -1,0 +1,20 @@
+-PHD Class-
+
+-PV Class-
+
+-VG Class-
+
+-LV Class-
+
+-COMMON Class-
+
+-Logic Class-
+
+-Runner Class-
+Create a logic object that calls the run() method
+
+-Data File-
+File where all the data is kept
+
+-Data Class-
+Writes to the Data file
