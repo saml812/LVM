@@ -1,20 +1,103 @@
--PHD Class-
+    -PHD Class-
+*Instance Variables
+String name
+int size
+String type
+*Methods
+getName()--returns the name
+getSize()--returns the size
+getType()--returns the type
 
--PV Class-
+    -PV Class-
+*Instance Variables
+String name
+PHD drive
+*Methods
+getName()--returns the name
+getDrive()--returns the PHD object
+This class extends to the COMMON Class
+-To Inherit the UUID Value and whether a PV object is linked to a PHD so that the PV cannot be linked to another PHD
 
--VG Class-
+    -VG Class-
+*Instance Variables
+int total
+int available
+String name
+ArrayList<PV> pvList
+*Methods
+getTotal--returns the total space
+getAvailable()--returns the available space
+getName--returns the name
+setAvailable(int available)--subtracts the parameter from the instance variable
+getPvList()--returns the pvList
+updateSize(int n)--updates the total size and available size
+This class extends to the COMMON Class
+-To Inherit the UUID Value and whether a VG object is linked to a PV
 
--LV Class-
+    -LV Class-
+*Instance Variables
+int size
+String name
+VG volumeGroup
+String type
+*Methods
+getSize()--returns the size
+getName()--returns the name
+getVolumeGroup-- returns the volumeGroup object
+getType()--returns the type
+This class extends to the COMMON Class
+-To Inherit the UUID Value and whether a LV object is linked to a VG
 
--COMMON Class-
+    -COMMON Class-
+*Instance Variables
+UUID id
+boolean linked
+*Methods
+getId()--returns the UUID object
+isLinked()--returns whether linked is true or false
+setLinked(boolean linked)--sets linked to the parameter
+setId(UUID id)--sets id to the parameter(USED to update UUID when the program saves and reruns)
+This class is the superclass of 4 different classes because those 4 classes share one similar instance variable (UUID id)
 
--Logic Class-
+    -Logic Class-
+*Instance Variables
+PHD drive;
+ArrayList<PHD> driveList
+PV volume;
+ArrayList<PV> volumeList
+VG volumeGroup;
+ArrayList<VG> groupList
+LV logicalVolume;
+ArrayList<LV> logicalList
+*Methods
+run()--INCLUDES ALMOST EVERYTHING
+Each time run() is called, it checks the Data(File) and creates the necessary objects
+Then it will allow the user to create and display information about the LVM Data
+Objects(Hard Drives, Physical Volumes, Volume Groups, Logical Volumes)
+The method will make sure that the user cannot duplicate objects, link new objects to existing objects, if the objects the user is trying to link to, does not exist, and display the errors to the user if encountered.
+When creating Logical Volumes, the method will check if the Volume Group has enough space to allocate for the Logical Volume
+When the user enters "exit" the method will call the writeToFile() method
+createHD(String name, int size, String type)-- creates a hard drive
+listDrive()--list out all available hard drives and their information
+createPV(String name, PHD PHDname)-- creates a physical volume
+createPV(String name, PHD PHDname, String id)-- creates a physical volume and takes in a String id (UUID as a String)
+listVolume()-- list out all existing physical volume and their information. If a physical volume is linked to a volume group, it will display what volume group it's linked to else it if its not linked, it will not display it
+createVG(String name, PV volume)--creates a volume group
+createVG(String name, PV volume, String id)--creates a volume group and takes in a String id (UUID as a String)
+vgextend(VG name, PV volume)--adds a physical volume to an existing volume group
+vglist()--displays all existing volume groups and their information, name, total size, available size, physical volumes, uuid
+lvcreate(String name, int size, VG VGname, String type)--creates a logical volume, each time this method is call, it will call the setAvailable method in VG so that the size of the logical volume is takes part of the size of the volume group.
+lvcreate(String name, int size, VG VGname, String type, String id)--creates a logical volume and takes in a String id (UUID as a String)
+lvlist()--displays all existing logical volumes and their information, size, name, volume group, uuid.
 
--Runner Class-
+    -Runner Class-
 Create a logic object that calls the run() method
 
--Data File-
+    -Data File-
 File where all the data is kept
 
--Data Class-
+    -Data Class-
 Writes to the Data file
+*Method
+writeToFile(ArrayList<PHD> driveList, ArrayList<PV> volumeList, ArrayList<VG> groupList, ArrayList<LV> logicalList)
+This method will parse out information in each of the parameter ArrayLists and format the data into a specific way to be written into the Data file

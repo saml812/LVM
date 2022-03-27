@@ -1,8 +1,6 @@
-import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -264,10 +262,10 @@ public class Logic {
                     }
                 }
 
-                if (exist && !dup && size <= object.getAvaliable())
+                if (exist && !dup && size <= object.getAvailable())
                 {
                     lvcreate(name, size, object, type);
-                    object.setAvaliable(size);
+                    object.setAvailable(size);
                     System.out.println("Logical Volume " + name + " installed");
                 }
                 else if (!exist){
@@ -317,18 +315,26 @@ public class Logic {
 
     public void listVolume(){
         for (PV pv : volumeList) {
+            boolean notLinked = false;
             if (groupList.isEmpty()){
                 System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getId() + "]");
             }
-            else
             for (VG vg : groupList) {
                 for (int i = 0; i < vg.getPvList().size(); i++)
                 {
                     if (vg.getPvList().get(i).getName().equals(pv.getName()))
                     {
                         System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + vg.getName() + "] [" + pv.getId() + "]");
+                        break;
+                    }
+                    else {
+                        notLinked = true;
+                        break;
                     }
                 }
+            }
+            if (notLinked = true){
+                System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getId() + "]");
             }
         }
     }
@@ -351,7 +357,7 @@ public class Logic {
 
     public void vglist(){
         for (VG vg : groupList){
-            String display = vg.getName() + ": total:[" + vg.getTotal() + vg.getPvList().get(0).getDrive().getType() + "] available:[" + vg.getAvaliable() + vg.getPvList().get(0).getDrive().getType()+ "] [";
+            String display = vg.getName() + ": total:[" + vg.getTotal() + vg.getPvList().get(0).getDrive().getType() + "] available:[" + vg.getAvailable() + vg.getPvList().get(0).getDrive().getType()+ "] [";
             for (int i = 0; i < vg.getPvList().size(); i++){
                 String drive = vg.getPvList().get(i).getName();
                 display += drive + ",";

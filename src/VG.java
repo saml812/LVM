@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class VG extends COMMON{
     private int total;
-    private int avaliable;
+    private int available;
     private String name;
     private ArrayList<PV> pvList = new ArrayList<PV>();
 
@@ -13,7 +13,7 @@ public class VG extends COMMON{
         for (PV pv : pvList)
         {
             total += pv.getDrive().getSize();
-            avaliable += pv.getDrive().getSize();
+            available += pv.getDrive().getSize();
         }
     }
 
@@ -21,16 +21,16 @@ public class VG extends COMMON{
         return total;
     }
 
-    public int getAvaliable() {
-        return avaliable;
+    public int getAvailable() {
+        return available;
     }
 
     public String getName() {
         return name;
     }
 
-    public void setAvaliable(int avaliable) {
-        this.avaliable -= avaliable;
+    public void setAvailable(int available) {
+        this.available -= available;
     }
 
     public ArrayList<PV> getPvList() {
@@ -39,6 +39,6 @@ public class VG extends COMMON{
 
     public void updateSize(int n){
         total += n;
-        avaliable += n;
+        available += n;
     }
 }
