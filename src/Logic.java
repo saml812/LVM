@@ -55,6 +55,7 @@ public class Logic {
                     }
                 }
                 createVG(driveData[1], object, driveData[3]);
+                object.setLinkedtoVG(true);
                 if (driveData[2].contains(",")){
                     String[] drives = driveData[2].split("\\,");
                     {
@@ -72,6 +73,7 @@ public class Logic {
                                 }
                             }
                             vgextend(object1, object2);
+                            object2.setLinkedtoVG(true);
                         }
                     }
                 }
@@ -89,11 +91,13 @@ public class Logic {
                 lvcreate((driveData[1]), Integer.parseInt(driveData[2]), object, driveData[3], driveData[5]);
             }
         }
+        System.out.println("-Data Loaded-");
         myReader.close();
 
 
         System.out.println("Welcome to the LVM system! Enter your commands:");
         Scanner s = new Scanner(System.in);
+        System.out.print("cmd# ");
         String userChoice = s.nextLine();
         while (!(userChoice.equals("exit"))){
             if (userChoice.contains("install-drive"))
@@ -189,6 +193,7 @@ public class Logic {
                 {
                     createVG(name, object);
                     object.setLinked(true);
+                    object.setLinkedtoVG(true);
                     System.out.println("Volume Group " + name + " installed");
                 }
                 else if (!exist){
@@ -224,6 +229,7 @@ public class Logic {
                 if (exist && !object.isLinked())
                 {
                     vgextend(object1, object);
+                    object.setLinkedtoVG(true);
                     System.out.println("Volume Group " + name + " updated");
                 }
                 else if (!exist){
@@ -285,6 +291,7 @@ public class Logic {
             else{
                 System.out.println("Invalid command");
             }
+            System.out.print("cmd# ");
             userChoice = s.nextLine();
         }
         System.out.println("Saving data. Good-bye!");
@@ -315,25 +322,18 @@ public class Logic {
 
     public void listVolume(){
         for (PV pv : volumeList) {
-            boolean notLinked = false;
-            if (groupList.isEmpty()){
-                System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getId() + "]");
-            }
-            for (VG vg : groupList) {
-                for (int i = 0; i < vg.getPvList().size(); i++)
-                {
-                    if (vg.getPvList().get(i).getName().equals(pv.getName()))
+            if (pv.isLinkedtoVG()){
+                for (VG vg : groupList) {
+                    for (int i = 0; i < vg.getPvList().size(); i++)
                     {
-                        System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + vg.getName() + "] [" + pv.getId() + "]");
-                        break;
-                    }
-                    else {
-                        notLinked = true;
-                        break;
+                        if (vg.getPvList().get(i).getName().equals(pv.getName()))
+                        {
+                            System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + vg.getName() + "] [" + pv.getId() + "]");
+                        }
                     }
                 }
             }
-            if (notLinked = true){
+            else{
                 System.out.println(pv.getName() + ":[" + pv.getDrive().getSize() + pv.getDrive().getType() + "] [" + pv.getId() + "]");
             }
         }
