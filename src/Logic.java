@@ -121,7 +121,7 @@ public class Logic {
                     System.out.println("Drive: " + name + " installed");
                 }
                 else {
-                    System.out.println("Drive: " + name + " already exists");
+                    System.out.println("Error: Drive: " + name + " already exists");
                 }
             }
             else if (userChoice.equals("list-drives"))
@@ -156,13 +156,13 @@ public class Logic {
                     System.out.println("Physical Volume " + name + " installed");
                 }
                 else if (!exist){
-                    System.out.println("Drive: " + PHDname + " does not exist");
+                    System.out.println("Error: Drive: " + PHDname + " does not exist");
                 }
                 else if (dup) {
-                    System.out.println("Physical Volume " + name + " already exist");
+                    System.out.println("Error: Physical Volume " + name + " already exist");
                 }
                 else {
-                    System.out.println("Drive: " + PHDname + " is linked to other Physical Volume");
+                    System.out.println("Error: Drive: " + PHDname + " is linked to other Physical Volume");
                 }
             }
             else if (userChoice.equals("pvlist")){
@@ -197,13 +197,13 @@ public class Logic {
                     System.out.println("Volume Group " + name + " installed");
                 }
                 else if (!exist){
-                    System.out.println("Physical Volume: " + PVname + " does not exist");
+                    System.out.println("Error: Physical Volume: " + PVname + " does not exist");
                 }
                 else if (dup) {
-                    System.out.println("Volume Group " + name + " already exist");
+                    System.out.println("Error: Volume Group " + name + " already exist");
                 }
                 else {
-                    System.out.println("Physical Volume: " + PVname + " is linked to other Volume Group");
+                    System.out.println("Error: Physical Volume: " + PVname + " is linked to other Volume Group");
                 }
             }
             else if (userChoice.contains("vgextend")){
@@ -230,13 +230,13 @@ public class Logic {
                 {
                     vgextend(object1, object);
                     object.setLinkedtoVG(true);
-                    System.out.println("Volume Group " + name + " updated");
+                    System.out.println("Error: Volume Group " + name + " updated");
                 }
                 else if (!exist){
-                    System.out.println("Physical Volume: " + PVname + " does not exist");
+                    System.out.println("Error: Physical Volume: " + PVname + " does not exist");
                 }
                 else {
-                    System.out.println("Physical Volume: " + PVname + " is linked to other Volume Group");
+                    System.out.println("Error: Physical Volume: " + PVname + " is linked to other Volume Group");
                 }
             }
             else if (userChoice.contains("vglist"))
@@ -275,13 +275,13 @@ public class Logic {
                     System.out.println("Logical Volume " + name + " installed");
                 }
                 else if (!exist){
-                    System.out.println("Volume Group: " + VGname + " does not exist");
+                    System.out.println("Error: Volume Group: " + VGname + " does not exist");
                 }
                 else if (dup) {
-                    System.out.println("Logical Volume " + name + " already exist");
+                    System.out.println("Error: Logical Volume " + name + " already exist");
                 }
                 else {
-                    System.out.println("Volume Group: " + VGname + " does not have enough space");
+                    System.out.println("Error: Volume Group: " + VGname + " does not have enough space");
                 }
 
             }
@@ -289,7 +289,7 @@ public class Logic {
                 lvlist();
             }
             else{
-                System.out.println("Invalid command");
+                System.out.println("Error: Invalid command");
             }
             System.out.print("cmd# ");
             userChoice = s.nextLine();
