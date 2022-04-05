@@ -230,7 +230,7 @@ public class Logic {
                 {
                     vgextend(object1, object);
                     object.setLinkedtoVG(true);
-                    System.out.println("Error: Volume Group " + name + " updated");
+                    System.out.println("Volume Group " + name + " updated");
                 }
                 else if (!exist){
                     System.out.println("Error: Physical Volume: " + PVname + " does not exist");

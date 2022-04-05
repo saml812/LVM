@@ -3,3 +3,5 @@ PHD|bdg|100|G
 PV|pv1|sda|f1f8b8af-36aa-4321-985e-efb7d97f6778
 PV|pv2|bdg|ca3a70a7-42d1-4b83-bc6b-e321a20def40
 VG|vg1|pv1,pv2|aff41e11-8e71-4a40-85ee-22111d27a381
+LV|lv1|100|G|vg1|76b24a66-906c-49da-96af-a7e2dfe406c2
+LV|lv2|50|G|vg1|974559e6-2235-48d7-9a89-272dbb72713b
